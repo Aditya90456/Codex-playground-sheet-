@@ -32,7 +32,9 @@ export const DSA_PATTERNS = [
   "Trie",
   "Stacks & Queues",
   "Heap",
-  "Arrays & Hashing"
+  "Arrays & Hashing",
+  "Math & Geometry",
+  "Recursion"
 ];
 
 export const PROBLEMS: Problem[] = [
@@ -1585,5 +1587,70 @@ export const PROBLEMS: Problem[] = [
     difficulty: "Medium",
     link: "https://leetcode.com/problems/encode-and-decode-strings/",
     pattern: "Arrays & Hashing"
+  },
+  // Math & Geometry
+  {
+    id: "mg-1",
+    title: "Rotate Image",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/rotate-image/",
+    pattern: "Math & Geometry"
+  },
+  {
+    id: "mg-2",
+    title: "Spiral Matrix",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/spiral-matrix/",
+    pattern: "Math & Geometry"
+  },
+  {
+    id: "mg-3",
+    title: "Set Matrix Zeroes",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/set-matrix-zeroes/",
+    pattern: "Math & Geometry"
+  },
+  {
+    id: "mg-4",
+    title: "Pow(x, n)",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/powx-n/",
+    pattern: "Math & Geometry"
+  },
+  {
+    id: "mg-5",
+    title: "Multiply Strings",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/multiply-strings/",
+    pattern: "Math & Geometry"
+  },
+  // Recursion
+  {
+    id: "rc-1",
+    title: "K-th Symbol in Grammar",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/k-th-symbol-in-grammar/",
+    pattern: "Recursion"
+  },
+  {
+    id: "rc-2",
+    title: "Splitting a String Into Descending Consecutive Values",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/splitting-a-string-into-descending-consecutive-values/",
+    pattern: "Recursion"
+  },
+  {
+    id: "rc-3",
+    title: "Find Kth Bit in Nth Binary String",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/find-kth-bit-in-nth-binary-string/",
+    pattern: "Recursion"
+  },
+  {
+    id: "rc-4",
+    title: "Elimination Game",
+    difficulty: "Medium",
+    link: "https://leetcode.com/problems/elimination-game/",
+    pattern: "Recursion"
   }
 ];
