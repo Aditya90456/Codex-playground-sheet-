@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { Trophy, Medal, Star, Flame } from 'lucide-react';
+import { Trophy, Medal, Star } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 export function Leaderboard() {
-  const [entries, setEntries] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const q = query(collection(db, 'leaderboard'), orderBy('points', 'desc'), limit(20));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setEntries(docs);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+  const [entries, setEntries] = useState<any[]>([
+    { id: '1', displayName: 'Alex Rivera', points: 2450, photoURL: 'https://i.pravatar.cc/150?u=alex' },
+    { id: '2', displayName: 'Sarah Chen', points: 2120, photoURL: 'https://i.pravatar.cc/150?u=sarah' },
+    { id: '3', displayName: 'Michael Kim', points: 1890, photoURL: 'https://i.pravatar.cc/150?u=michael' },
+    { id: '4', displayName: 'Jessica Wong', points: 1540, photoURL: 'https://i.pravatar.cc/150?u=jessica' },
+    { id: '5', displayName: 'David Smith', points: 1200, photoURL: 'https://i.pravatar.cc/150?u=david' },
+  ]);
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="max-w-3xl mx-auto">

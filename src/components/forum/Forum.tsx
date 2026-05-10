@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   MessageSquare, 
@@ -15,43 +13,52 @@ import { formatDistanceToNow } from 'date-fns';
 
 export function Forum() {
   const { user, profile } = useAuth();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<any[]>([
+    {
+      id: '1',
+      title: 'How to master Binary Search?',
+      content: 'I am struggling with the boundary conditions in binary search. Any tips?',
+      category: 'General',
+      authorName: 'Alex Rivera',
+      authorPhoto: 'https://i.pravatar.cc/150?u=alex',
+      upvotes: 12,
+      createdAt: new Date(Date.now() - 3600000)
+    },
+    {
+      id: '2',
+      title: 'Google Interview Experience',
+      content: 'Just finished my onsite. The questions were heavily skewed towards Graphs and DP.',
+      category: 'Company-wise',
+      authorName: 'Sarah Chen',
+      authorPhoto: 'https://i.pravatar.cc/150?u=sarah',
+      upvotes: 45,
+      createdAt: new Date(Date.now() - 86400000)
+    }
+  ]);
   const [showNewPost, setShowNewPost] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'General' });
 
-  useEffect(() => {
-    const q = query(collection(db, 'forum/posts'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setPosts(docs);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleCreatePost = async (e: React.FormEvent) => {
+  const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newPost.title || !newPost.content) return;
 
-    await addDoc(collection(db, 'forum/posts'), {
+    const post = {
+      id: Math.random().toString(36).substr(2, 9),
       ...newPost,
-      authorId: user.uid,
+      authorId: user.id || user.uid,
       authorName: profile?.displayName,
       authorPhoto: profile?.photoURL,
       upvotes: 0,
-      createdAt: serverTimestamp(),
-    });
+      createdAt: new Date(),
+    };
 
+    setPosts([post, ...posts]);
     setNewPost({ title: '', content: '', category: 'General' });
     setShowNewPost(false);
-    
-    // Award points for participation
-    const userRef = doc(db, 'users', user.uid);
-    await updateDoc(userRef, { points: increment(5) });
   };
 
-  const handleUpvote = async (postId: string) => {
-    const postRef = doc(db, 'forum/posts', postId);
-    await updateDoc(postRef, { upvotes: increment(1) });
+  const handleUpvote = (postId: string) => {
+    setPosts(posts.map(p => p.id === postId ? { ...p, upvotes: p.upvotes + 1 } : p));
   };
 
   return (
@@ -151,7 +158,7 @@ export function Forum() {
                     {post.category}
                   </span>
                   <span className="text-xs text-gray-400">
-                    • {post.createdAt ? formatDistanceToNow(post.createdAt.toDate(), { addSuffix: true }) : 'just now'}
+                    • {formatDistanceToNow(post.createdAt, { addSuffix: true })}
                   </span>
                 </div>
                 

@@ -55,7 +55,7 @@ export function LandingPage() {
           className="group relative flex items-center gap-3 mx-auto bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-50 transition-all active:scale-95"
         >
           <LogIn size={24} />
-          Sign in with Google
+          Sign in to Get Started
           <div className="absolute -inset-1 bg-white/20 blur opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
         </button>
 

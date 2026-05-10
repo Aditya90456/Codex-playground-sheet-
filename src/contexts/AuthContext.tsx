@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User, signInWithPopup, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { auth, db, googleProvider } from '../lib/firebase';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
 interface AuthContextType {
-  user: User | null;
+  user: any | null;
   profile: any | null;
   loading: boolean;
   signIn: () => Promise<void>;
@@ -14,62 +12,57 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const { user: clerkUser, isLoaded } = useUser();
+  const { openSignIn, signOut } = useClerk();
   const [profile, setProfile] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
+    if (!isLoaded) return;
 
-        if (!userDoc.exists()) {
-          const newProfile = {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            points: 0,
-            badges: [],
-            dailyGoalMinutes: 60,
-            createdAt: new Date().toISOString(),
-          };
-          await setDoc(userDocRef, newProfile);
-          setProfile(newProfile);
-        }
+    if (clerkUser) {
+      // Use LocalStorage for profile data instead of Firestore
+      const storedPoints = localStorage.getItem(`points_${clerkUser.id}`) || '0';
+      const storedBadges = localStorage.getItem(`badges_${clerkUser.id}`) || '[]';
 
-        // Real-time sync for profile (points, badges etc)
-        const unsubProfile = onSnapshot(userDocRef, (doc) => {
-          setProfile(doc.data());
-        });
-        
-        setLoading(false);
-        return () => unsubProfile();
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+      const userProfile = {
+        uid: clerkUser.id,
+        id: clerkUser.id,
+        displayName: clerkUser.fullName || clerkUser.username || clerkUser.primaryEmailAddress?.emailAddress?.split('@')[0],
+        email: clerkUser.primaryEmailAddress?.emailAddress,
+        photoURL: clerkUser.imageUrl,
+        points: parseInt(storedPoints),
+        badges: JSON.parse(storedBadges),
+        dailyGoalMinutes: 60,
+        createdAt: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString(),
+      };
+      setProfile(userProfile);
+    } else {
+      setProfile(null);
+    }
+  }, [clerkUser, isLoaded]);
 
   const signIn = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      openSignIn();
     } catch (error) {
       console.error("Auth error", error);
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    await signOut();
+  };
+
+  const value = {
+    user: clerkUser ? { ...clerkUser, uid: clerkUser.id } : null,
+    profile,
+    loading: !isLoaded,
+    signIn,
+    logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
