@@ -15,13 +15,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { user: clerkUser, isLoaded } = useUser();
   const { openSignIn, signOut } = useClerk();
   const [profile, setProfile] = useState<any | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded) {
+        console.warn("Clerk loading timed out. Check network or key.");
+        setTimedOut(true);
+      }
+    }, 10000); // 10 seconds timeout
+
+    return () => clearTimeout(timer);
+  }, [isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
 
     if (clerkUser) {
-      // Use LocalStorage for profile data instead of Firestore
-      const storedPoints = localStorage.getItem(`points_${clerkUser.id}`) || '0';
+      // Use LocalStorage for persistent progress tied to user ID
+      const storedPoints = localStorage.getItem(`points_${clerkUser.id}`) || '150';
       const storedBadges = localStorage.getItem(`badges_${clerkUser.id}`) || '[]';
 
       const userProfile = {
@@ -56,7 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user: clerkUser ? { ...clerkUser, uid: clerkUser.id } : null,
     profile,
-    loading: !isLoaded,
+    loading: !isLoaded && !timedOut,
+    timedOut,
     signIn,
     logout
   };
