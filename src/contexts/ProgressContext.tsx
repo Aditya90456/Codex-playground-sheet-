@@ -34,10 +34,15 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const savedProgress = localStorage.getItem(`${STORAGE_KEY}_${user.id}`);
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress));
-    } else {
+    try {
+      const savedProgress = localStorage.getItem(`${STORAGE_KEY}_${user.id}`);
+      if (savedProgress) {
+        setProgress(JSON.parse(savedProgress));
+      } else {
+        setProgress({});
+      }
+    } catch (error) {
+      console.error("Error loading progress from localStorage", error);
       setProgress({});
     }
     setLoading(false);
@@ -46,34 +51,38 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const updateProgress = async (problemId: string, data: Partial<ProgressData>) => {
     if (!user) return;
 
-    setProgress(prev => {
-      const existing = prev[problemId];
-      const updatedData = {
-        ...existing,
-        ...data,
-        problemId,
-        lastPracticedAt: new Date().toISOString(),
-      };
-      
-      const newProgress = {
-        ...prev,
-        [problemId]: {
-          ...updatedData,
-          status: data.status || existing?.status || 'todo',
-          timeSpentMinutes: (existing?.timeSpentMinutes || 0) + (data.timeSpentMinutes || 0),
-        } as ProgressData
-      };
+    try {
+      setProgress(prev => {
+        const existing = prev[problemId];
+        const updatedData = {
+          ...existing,
+          ...data,
+          problemId,
+          lastPracticedAt: new Date().toISOString(),
+        };
+        
+        const newProgress = {
+          ...prev,
+          [problemId]: {
+            ...updatedData,
+            status: data.status || existing?.status || 'todo',
+            timeSpentMinutes: (existing?.timeSpentMinutes || 0) + (data.timeSpentMinutes || 0),
+          } as ProgressData
+        };
 
-      localStorage.setItem(`${STORAGE_KEY}_${user.id}`, JSON.stringify(newProgress));
+        localStorage.setItem(`${STORAGE_KEY}_${user.id}`, JSON.stringify(newProgress));
 
-      // Award points logic (mocked)
-      if (data.status === 'completed' && (!existing || existing.status !== 'completed')) {
-        const currentPoints = Number(localStorage.getItem(`points_${user.id}`)) || 0;
-        localStorage.setItem(`points_${user.id}`, String(currentPoints + 10));
-      }
+        // Award points logic (mocked)
+        if (data.status === 'completed' && (!existing || existing.status !== 'completed')) {
+          const currentPoints = Number(localStorage.getItem(`points_${user.id}`)) || 0;
+          localStorage.setItem(`points_${user.id}`, String(currentPoints + 10));
+        }
 
-      return newProgress;
-    });
+        return newProgress;
+      });
+    } catch (error) {
+      console.error("Error updating progress:", error);
+    }
   };
 
   return (

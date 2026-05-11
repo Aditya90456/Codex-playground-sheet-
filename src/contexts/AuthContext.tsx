@@ -34,21 +34,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (clerkUser) {
       // Use LocalStorage for persistent progress tied to user ID
-      const storedPoints = localStorage.getItem(`points_${clerkUser.id}`) || '150';
-      const storedBadges = localStorage.getItem(`badges_${clerkUser.id}`) || '[]';
+      try {
+        const storedPoints = localStorage.getItem(`points_${clerkUser.id}`) || '150';
+        const storedBadges = localStorage.getItem(`badges_${clerkUser.id}`) || '[]';
 
-      const userProfile = {
-        uid: clerkUser.id,
-        id: clerkUser.id,
-        displayName: clerkUser.fullName || clerkUser.username || clerkUser.primaryEmailAddress?.emailAddress?.split('@')[0],
-        email: clerkUser.primaryEmailAddress?.emailAddress,
-        photoURL: clerkUser.imageUrl,
-        points: parseInt(storedPoints),
-        badges: JSON.parse(storedBadges),
-        dailyGoalMinutes: 60,
-        createdAt: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString(),
-      };
-      setProfile(userProfile);
+        const userProfile = {
+          uid: clerkUser.id,
+          id: clerkUser.id,
+          displayName: clerkUser.fullName || clerkUser.username || clerkUser.primaryEmailAddress?.emailAddress?.split('@')[0],
+          email: clerkUser.primaryEmailAddress?.emailAddress,
+          photoURL: clerkUser.imageUrl,
+          points: parseInt(storedPoints),
+          badges: JSON.parse(storedBadges),
+          dailyGoalMinutes: 60,
+          createdAt: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString(),
+        };
+        setProfile(userProfile);
+      } catch (error) {
+        console.error("Error loading profile from localStorage", error);
+        // Fallback profile
+        setProfile({
+          uid: clerkUser.id,
+          id: clerkUser.id,
+          displayName: clerkUser.fullName || "User",
+          email: clerkUser.primaryEmailAddress?.emailAddress,
+          photoURL: clerkUser.imageUrl,
+          points: 150,
+          badges: [],
+          dailyGoalMinutes: 60,
+          createdAt: new Date().toISOString(),
+        });
+      }
     } else {
       setProfile(null);
     }
