@@ -55,8 +55,21 @@ function AppContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mb-4"></div>
-        <p className="text-zinc-400 font-medium">Initializing Security...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mb-6"></div>
+        <div className="space-y-4 text-center">
+          <p className="text-zinc-400 font-medium">Initializing Security...</p>
+          <div className="pt-8">
+            <button 
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="text-xs text-zinc-600 hover:text-zinc-400 underline transition-colors"
+            >
+              Reset Session & Retry
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

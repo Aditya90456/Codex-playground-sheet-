@@ -5,6 +5,7 @@ interface AuthContextType {
   user: any | null;
   profile: any | null;
   loading: boolean;
+  timedOut: boolean;
   signIn: () => Promise<void>;
   logout: () => Promise<void>;
 }
