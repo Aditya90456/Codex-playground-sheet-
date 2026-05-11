@@ -51,7 +51,7 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);
   
-  if (!PUBLISHABLE_KEY || PUBLISHABLE_KEY.trim() === '' || PUBLISHABLE_KEY.startsWith('YOUR_')) {
+  if (!PUBLISHABLE_KEY || PUBLISHABLE_KEY.trim() === '' || PUBLISHABLE_KEY.startsWith('YOUR_') || !PUBLISHABLE_KEY.startsWith('pk_')) {
     root.render(<MissingKeyUI />);
   } else {
     root.render(

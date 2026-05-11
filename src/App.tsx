@@ -32,20 +32,36 @@ function AppContent() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold">Authentication Timeout</h1>
-          <p className="text-zinc-400">
-            The security module is taking longer than expected to load. This usually happens if the API key is incorrect or if a browser extension is blocking the request.
-          </p>
+          <h1 className="text-2xl font-bold">Authentication Hang</h1>
+          <div className="space-y-4 text-zinc-400">
+            <p>
+              We're having trouble connecting to the authentication server. 
+            </p>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-left space-y-3">
+              <p className="text-sm font-semibold text-zinc-300">Fast Fixes:</p>
+              <ul className="text-xs space-y-2 list-disc list-inside">
+                <li>Check if <span className="text-indigo-400">VITE_CLERK_PUBLISHABLE_KEY</span> in Settings starts with <code className="text-white">pk_</code></li>
+                <li>Disable Ad-blocks/Brave shields for this site</li>
+                <li>Ensure you didn't include "VITE_CLERK_PUBLISHABLE_KEY=" inside the value field</li>
+              </ul>
+            </div>
+          </div>
           <div className="flex flex-col gap-3">
             <button 
               onClick={() => window.location.reload()}
               className="px-6 py-2 bg-indigo-600 rounded-full font-bold hover:bg-indigo-700 transition-colors"
             >
-              Retry Connection
+              Refresh App
             </button>
-            <p className="text-xs text-zinc-500">
-              Ensure <code className="text-zinc-300">VITE_CLERK_PUBLISHABLE_KEY</code> is correctly set in your environment variables.
-            </p>
+            <button 
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="text-xs text-zinc-500 hover:text-zinc-300 underline"
+            >
+              Reset Session Cache
+            </button>
           </div>
         </div>
       </div>

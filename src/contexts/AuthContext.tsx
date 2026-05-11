@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn("Clerk loading timed out. Check network or key.");
         setTimedOut(true);
       }
-    }, 10000); // 10 seconds timeout
+    }, 15000); // Increased to 15 seconds timeout
 
     return () => clearTimeout(timer);
   }, [isLoaded]);
